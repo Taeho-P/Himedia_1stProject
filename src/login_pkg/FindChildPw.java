@@ -18,84 +18,90 @@ import javax.swing.JFrame;
 
 import db_pkg.CenterDAO;
 
-public class FindChildAcc extends WindowAdapter implements ActionListener {
+public class FindChildPw extends WindowAdapter implements ActionListener{
 	private JFrame fFindAcc;
-	private Label lFindId, lName, lBirth, lGender, lParent;
-	private TextField tfName, tfParent;
+	private Label lId, lFindId, lName, lBirth, lGender, lParent;
+	private TextField tfId, tfName, tfParent;
 	private Choice cBirthY, cBirthM, cBirthD, cForM;
 	private CheckboxGroup cgGender;
 	private Checkbox cbM, cbF;
 	private Button bFind, btCau, btFindPw;
 	private Dialog dCaution;
-	private FindChildPw fpw;
 
 	private CenterDAO cDAO;
 
-	public FindChildAcc() {
-		fFindAcc = new JFrame("아이디 찾기");
-		fFindAcc.setSize(400, 260);
+	public FindChildPw() {
+		fFindAcc = new JFrame("비밀번호 찾기");
+		fFindAcc.setSize(400, 280);
 		fFindAcc.setLayout(null);
 		fFindAcc.setResizable(false);
 		fFindAcc.setLocationRelativeTo(null);
 		Image icon = new ImageIcon("./src/icon.png").getImage();
 		fFindAcc.setIconImage(icon);
+		
+		lFindId = new Label("비밀번호 찾기");
+		lFindId.setBounds(155, 20, 80, 25);
 
-		lFindId = new Label("아이디 찾기");
-		lFindId.setBounds(160, 20, 65, 25);
-
+		lId = new Label("아이디");
+		lId.setBounds(83, 50, 50, 25);
+		
 		lName = new Label("이름");
-		lName.setBounds(95, 50, 30, 25);
+		lName.setBounds(95, 80, 30, 25);
 
 		lBirth = new Label("생년월일");
-		lBirth.setBounds(70, 81, 50, 25);
+		lBirth.setBounds(70, 111, 50, 25);
 
 		lGender = new Label("성별");
-		lGender.setBounds(95, 109, 30, 25);
+		lGender.setBounds(95, 139, 30, 25);
 
 		lParent = new Label("부모님 성함");
-		lParent.setBounds(55, 136, 65, 25);
+		lParent.setBounds(55, 166, 65, 25);
 
 		cBirthY = new Choice();
 		for (int i = 1990; i < 2024; i++) {
 			cBirthY.add(Integer.toString(i));
 		}
-		cBirthY.setBounds(135, 83, 55, 20);
+		cBirthY.setBounds(135, 113, 55, 20);
 
 		cBirthM = new Choice();
 		for (int i = 1; i <= 12; i++) {
 			cBirthM.add(Integer.toString(i));
 		}
-		cBirthM.setBounds(200, 83, 40, 20);
+		cBirthM.setBounds(200, 113, 40, 20);
 
 		cBirthD = new Choice();
 		for (int i = 1; i <= 31; i++) {
 			cBirthD.add(Integer.toString(i));
 		}
-		cBirthD.setBounds(250, 83, 40, 20);
+		cBirthD.setBounds(250, 113, 40, 20);
+		
+		tfId = new TextField(20);
+		tfId.setBounds(135, 53, 160, 20);
 
 		tfName = new TextField(20);
-		tfName.setBounds(135, 53, 160, 20);
+		tfName.setBounds(135, 83, 160, 20);
 
 		cgGender = new CheckboxGroup();
 		cbM = new Checkbox("남", cgGender, true);
-		cbM.setBounds(160, 112, 30, 20);
+		cbM.setBounds(160, 142, 30, 20);
 
 		cbF = new Checkbox("여", cgGender, false);
-		cbF.setBounds(230, 112, 30, 20);
+		cbF.setBounds(230, 142, 30, 20);
 
 		tfParent = new TextField(20);
-		tfParent.setBounds(195, 138, 100, 20);
+		tfParent.setBounds(195, 168, 100, 20);
 		cForM = new Choice();
-		cForM.setBounds(135, 137, 50, 20);
+		cForM.setBounds(135, 167, 50, 20);
 		cForM.add("부");
 		cForM.add("모");
 
-		bFind = new Button("아이디 찾기");
-		bFind.setBounds(161, 170, 75, 30);
+		bFind = new Button("비밀번호 찾기");
+		bFind.setBounds(152, 200, 90, 30);
 		bFind.addActionListener(this);
 		bFind.setActionCommand("find");
 
 		fFindAcc.add(lFindId);
+		fFindAcc.add(lId);
 		fFindAcc.add(lName);
 		fFindAcc.add(lBirth);
 		fFindAcc.add(lGender);
@@ -110,6 +116,7 @@ public class FindChildAcc extends WindowAdapter implements ActionListener {
 		fFindAcc.add(cbM);
 		fFindAcc.add(cbF);
 
+		fFindAcc.add(tfId);
 		fFindAcc.add(tfName);
 		fFindAcc.add(tfParent);
 
@@ -120,12 +127,6 @@ public class FindChildAcc extends WindowAdapter implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getActionCommand().equals("findPw")) {
-			fpw = new FindChildPw();
-			fFindAcc.setVisible(false);
-			dCaution.dispose();
-			return;
-		}
 		if (e.getActionCommand().equals("goLogin")) {
 			fFindAcc.dispose();
 			dCaution.dispose();
@@ -137,11 +138,13 @@ public class FindChildAcc extends WindowAdapter implements ActionListener {
 		}
 
 		if (e.getActionCommand().equals("find")) {
-			if (tfName.getText().equals("") || tfParent.getText().equals("")) {
+			if (tfId.getText().equals("") || tfName.getText().equals("") || tfParent.getText().equals("")) {
 				showCaution("비어있는 항목이 있습니다.", "모두 입력해주세요.");
 				return;
 			}
-
+			
+			
+			String sId = tfId.getText();
 			String sCName = tfName.getText();
 			String sCBirth = cBirthY.getSelectedItem() + "-"
 					+ String.format("%02d", Integer.parseInt(cBirthM.getSelectedItem())) + "-"
@@ -149,7 +152,8 @@ public class FindChildAcc extends WindowAdapter implements ActionListener {
 			String sGender = cbM.getState() ? "남" : "여";
 			String sForM = cForM.getSelectedItem();
 			String sParent = tfParent.getText();
-
+			
+			System.out.println(sId);
 			System.out.println(sCName);
 			System.out.println(sCBirth);
 			System.out.println(sGender);
@@ -157,14 +161,14 @@ public class FindChildAcc extends WindowAdapter implements ActionListener {
 			System.out.println(sParent);
 
 			cDAO = new CenterDAO();
-			String sFindId = cDAO.findChildList(sCName, sCBirth, sGender, sForM, sParent);
+			String sFindPw = cDAO.findChildList(sId, sCName, sCBirth, sGender, sForM, sParent);
 
-			if (sFindId.equals(" ")) {
+			if (sFindPw.equals(" ")) {
 				System.out.println("일치하는 아이디 없음");
 				showCaution("일치하는 계정이 없습니다.", "입력정보를 확인해주세요.");
 			} else {
-				System.out.println(sFindId);
-				showAcc(tfName.getText() + "님의 아이디는", sFindId);
+				System.out.println(sFindPw);
+				showAcc(tfId.getText() + "님의 비밀번호는", sFindPw);
 				
 			}
 		}
@@ -194,19 +198,15 @@ public class FindChildAcc extends WindowAdapter implements ActionListener {
 		lMsg2.setLocation(70, 65);
 
 		btCau = new Button("로그인 하기");
-		btCau.setBounds(48, 100, 85, 30);
+		btCau.setBounds(95, 100, 85, 30);
 		btCau.addActionListener(this);
 		btCau.setActionCommand("goLogin");
 		
-		btFindPw = new Button("비밀번호 찾기");
-		btFindPw.setBounds(146, 100, 85, 30);
-		btFindPw.addActionListener(this);
-		btFindPw.setActionCommand("findPw");
+		
 
 		dCaution.add(btCau);
 		dCaution.add(lMsg1);
 		dCaution.add(lMsg2);
-		dCaution.add(btFindPw);
 		dCaution.setVisible(true);
 	}
 

@@ -18,11 +18,11 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 
-import db_pkg.ChildDAO;
+import db_pkg.CenterDAO;
 import db_pkg.ChildVo;
-import db_pkg.TeacherDAO;
 import db_pkg.TeacherVo;
 import join_pkg.TeacherJoin;
+import main_pkg.ChildMain;
 import tool_pkg.ImagePanel;
 
 public class Login_Frame extends WindowAdapter implements ActionListener {
@@ -34,14 +34,11 @@ public class Login_Frame extends WindowAdapter implements ActionListener {
 	private JButton btTjoin, btFind, bts;
 	private Button btLogin, btCau;
 	private ImagePanel ip;
-	private TeacherDAO Tdao;
-	private ChildDAO Cdao;
+	private CenterDAO cDAO;
 	private Dialog dCaution;
 	private TeacherJoin tjTJ;
-	private String[] Login_info = new String[3];
-	
-	
-	
+	private ChildMain childMain;
+
 	Color c = new Color(255, 0, 0);
 
 	public Login_Frame() {
@@ -88,10 +85,8 @@ public class Login_Frame extends WindowAdapter implements ActionListener {
 		btTjoin.setBounds(80, 180, 100, 25);
 		btTjoin.setBorderPainted(false); // 버튼 외곽 없애기
 		btTjoin.setContentAreaFilled(false); // 버튼 내부배경 없애기
-		btTjoin.addActionListener(this); //액션리스너 부착
-		
-		
-		
+		btTjoin.addActionListener(this); // 액션리스너 부착
+
 		bts = new JButton("｜"); // 선생님 등록버튼과 회원정보찾기 버튼 사이 '/' 구현
 		bts.setBounds(150, 180, 50, 25);
 		bts.setBorderPainted(false);
@@ -102,7 +97,7 @@ public class Login_Frame extends WindowAdapter implements ActionListener {
 		btFind.setBorderPainted(false);
 		btFind.setContentAreaFilled(false);
 		btFind.setActionCommand("findAcc");
-		btFind.addActionListener(this); //액션리스너 부착
+		btFind.addActionListener(this); // 액션리스너 부착
 
 		fLogin.add(cbT);
 		fLogin.add(cbC);
@@ -117,8 +112,7 @@ public class Login_Frame extends WindowAdapter implements ActionListener {
 		fLogin.add(ip);
 		fLogin.setDefaultCloseOperation(fLogin.EXIT_ON_CLOSE);
 		fLogin.setVisible(true);
-		
-		
+
 	}
 
 	public void windowClosing(WindowEvent e) {
@@ -170,10 +164,10 @@ public class Login_Frame extends WindowAdapter implements ActionListener {
 			System.out.println(getID());
 			System.out.println(getPW());
 			if (TorC.equals("teacher")) {
-				Tdao = new TeacherDAO();
+				cDAO = new CenterDAO();
 
 				String sId = getID();
-				ArrayList<TeacherVo> Tlist = Tdao.list(sId);
+				ArrayList<TeacherVo> Tlist = cDAO.teacherList(sId);
 
 				for (int i = 0; i < Tlist.size(); i++) {
 					TeacherVo data = (TeacherVo) Tlist.get(i);
@@ -185,13 +179,8 @@ public class Login_Frame extends WindowAdapter implements ActionListener {
 					if (getPW().equals(pw)) {
 						System.out.println("로그인 성공");
 						System.out.println(data.getHire_date());
-						
-						
-						Login_info[0] = "teacher";
-						Login_info[1] = data.getT_code();
-						Login_info[2] = data.getT_name();
-						
-						
+
+						return;
 
 					} else {
 						failLogin();
@@ -200,10 +189,10 @@ public class Login_Frame extends WindowAdapter implements ActionListener {
 			}
 
 			if (TorC.equals("child")) {
-				Cdao = new ChildDAO();
+				cDAO = new CenterDAO();
 
 				String sId = getID();
-				ArrayList<ChildVo> Clist = Cdao.list(sId);
+				ArrayList<ChildVo> Clist = cDAO.childList(sId);
 
 				for (int i = 0; i < Clist.size(); i++) {
 					ChildVo data = (ChildVo) Clist.get(i);
@@ -215,7 +204,8 @@ public class Login_Frame extends WindowAdapter implements ActionListener {
 					if (getPW().equals(pw)) {
 						System.out.println("로그인 성공");
 						System.out.println(data.getC_birthday());
-						// 선생님 메인창 띄우기
+						fLogin.dispose();
+						childMain = new ChildMain(data);
 
 					} else {
 						System.out.println("로그인 실패");
@@ -246,27 +236,20 @@ public class Login_Frame extends WindowAdapter implements ActionListener {
 			}
 
 		}
-		
-		
+
 		if (e.getActionCommand().equals("선생님 등록")) {
 			System.out.println("선생님 등록버튼 클릭");
 			tjTJ = new TeacherJoin();
 			tjTJ.startTJ();
 		}
-		
+
 		if (e.getActionCommand().equals("findAcc")) {
 			System.out.println("아동 계정찾기 버튼 클릭");
 			FindChildAcc fca = new FindChildAcc();
-			
-			
+
 		}
-		
+
 	}
-	
-	public String[] loginSuccess() {
-		return Login_info;
-	}
-	
 
 	public String getID() {
 		return tfID.getText();

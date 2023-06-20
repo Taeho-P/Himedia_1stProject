@@ -17,9 +17,7 @@ import java.awt.event.WindowEvent;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
-import db_pkg.CenterCodeDAO;
-import db_pkg.TeacherID_Check;
-import db_pkg.TeacherJoinDAO;
+import db_pkg.CenterDAO;
 
 public class TeacherJoin extends WindowAdapter implements ActionListener {
 	private JFrame fTJoin;
@@ -30,10 +28,8 @@ public class TeacherJoin extends WindowAdapter implements ActionListener {
 	private Choice HireY, HireM, HireD;
 	private Button bIdCheck, bJoin, btCau;
 	private Dialog dCaution;
-	private TeacherID_Check id_Check;
-	private CenterCodeDAO center_Check;
+	private CenterDAO id_Check;
 	private String sGender;
-	private TeacherJoinDAO TJoinDAO;
 
 	public TeacherJoin() {
 	}
@@ -50,10 +46,9 @@ public class TeacherJoin extends WindowAdapter implements ActionListener {
 		lId = new Label("아이디");
 		lId.setBounds(78, 25, 40, 25);
 
-
 		Color cRed = new Color(255, 0, 0);
 		Color cGreen = new Color(0, 255, 0);
-		
+
 		lIdCheck1 = new Label("사용 가능한 아이디입니다.");
 		lIdCheck1.setBounds(125, 48, 160, 23);
 		lIdCheck1.setVisible(false);
@@ -63,7 +58,7 @@ public class TeacherJoin extends WindowAdapter implements ActionListener {
 		lIdCheck2.setBounds(125, 48, 160, 23);
 		lIdCheck2.setVisible(false);
 		lIdCheck2.setForeground(cRed);
-		
+
 		lIdCheck3 = new Label("아이디를 입력해주세요.");
 		lIdCheck3.setBounds(125, 48, 160, 23);
 		lIdCheck3.setVisible(false);
@@ -227,8 +222,8 @@ public class TeacherJoin extends WindowAdapter implements ActionListener {
 				return;
 			} else {
 				String check;
-				id_Check = new TeacherID_Check();
-				check = id_Check.ID_Check(tfId.getText());
+				id_Check = new CenterDAO();
+				check = id_Check.T_ID_Check(tfId.getText());
 
 				if (check.equals("joinable")) {
 					lIdCheck1.setVisible(true);
@@ -298,7 +293,7 @@ public class TeacherJoin extends WindowAdapter implements ActionListener {
 			} else {
 				System.out.println(tfEmail.getText());
 			} // 이메일 입력여부 확인
-			
+
 			boolean bLeapYear;
 
 			int iHYear = Integer.parseInt(HireY.getSelectedItem());
@@ -327,16 +322,13 @@ public class TeacherJoin extends WindowAdapter implements ActionListener {
 					failJoin("해당 달은 2월입니다.", "날짜를 확인해주세요.");
 					return;
 				}
-			} 
-			else if (iM == 4 || iM == 6 || iM == 9 || iM == 11) {
+			} else if (iM == 4 || iM == 6 || iM == 9 || iM == 11) {
 				if (iD > 30) {
 					failJoin("해당 달은 30일까지입니다.", "날짜를 확인해주세요.");
 					return;
 				}
-					
+
 			}
-			
-			
 
 			String sCenterCheck;
 
@@ -344,8 +336,8 @@ public class TeacherJoin extends WindowAdapter implements ActionListener {
 				failJoin("", "학원코드를 입력해주세요.");
 				return;
 			} else {
-				center_Check = new CenterCodeDAO();
-				sCenterCheck = center_Check.Center_Check(tfCcode.getText());
+				id_Check = new CenterDAO();
+				sCenterCheck = id_Check.Center_Check(tfCcode.getText());
 			}
 
 			if (sCenterCheck.equals("unsame")) {
@@ -353,10 +345,7 @@ public class TeacherJoin extends WindowAdapter implements ActionListener {
 				return;
 			}
 
-			
-				
-			//1 3 5 7 8 10 12
-				
+			// 1 3 5 7 8 10 12
 
 			String sTID = tfId.getText();
 			String sTPW = tfPw.getText();
@@ -376,11 +365,11 @@ public class TeacherJoin extends WindowAdapter implements ActionListener {
 			System.out.println(sTEmail);
 			System.out.println(sTHireDate);
 
-			TJoinDAO = new TeacherJoinDAO(sTID, sTPW, sTName, sTEmail, sTGender, sTCall, sTHireDate);
-			
-			String JoinCheck = TJoinDAO.getTjoin();
-			
-			if(JoinCheck.equals("JoinSuccess")) {
+			id_Check = new CenterDAO();
+			id_Check.TeacherJoin(sTID, sTPW, sTName, sTEmail, sTGender, sTCall, sTHireDate);
+			String JoinCheck = id_Check.getTjoin();
+
+			if (JoinCheck.equals("JoinSuccess")) {
 				fTJoin.dispose();
 				failJoin("", "가입이 완료됐습니다.");
 			} else {
