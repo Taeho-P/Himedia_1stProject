@@ -20,7 +20,9 @@ public class CenterDAO {
 
 	private String Tjoin;
 	private String sAtnd;
-
+	private String sCtOut;
+	private String sAddHo;
+	
 	public ArrayList<TeacherVo> teacherList(String id) {
 		ArrayList<TeacherVo> list = new ArrayList<TeacherVo>();
 
@@ -234,7 +236,7 @@ public class CenterDAO {
 		try {
 			connDB();
 
-			String query = "SELECT center_in, center_out, code_date FROM attend_table";
+			String query = "SELECT center_in, center_out, code_date, add_ho FROM attend_table";
 			query += " where code_date like '" + code_date + "'";
 			System.out.println("SQL : " + query);
 
@@ -245,9 +247,19 @@ public class CenterDAO {
 				System.out.println("0 row selected...");
 				System.out.println("일치하는 기록이 없습니다.");
 				sCheck[0] = "in";
-			} else {
+			} else if (rs.getString("center_out") == null){
 				System.out.println(rs.getRow() + "rows selected...");
 				sCheck[0] = "out";
+				sCheck[1] = rs.getString("center_in");
+				sCheck[2] = rs.getString("center_out");
+			} else if (rs.getString("add_ho") == null) {
+				System.out.println(rs.getRow() + "rows selected...");
+				sCheck[0] = "home";
+				sCheck[1] = rs.getString("center_in");
+				sCheck[2] = rs.getString("center_out");
+			} else {
+				System.out.println("출석 호 받음");
+				sCheck[0] = "HoAdded";
 				sCheck[1] = rs.getString("center_in");
 				sCheck[2] = rs.getString("center_out");
 			}
@@ -362,6 +374,71 @@ public class CenterDAO {
 		}
 
 	}
+	
+	
+	public String center_OUT(String center_out, String code_date) {
+
+		try {
+
+			connDB();
+			
+			//UPDATE ATTEND_TABLE SET center_out = to_date ('2023-06-21 12:05', 'yyyy-mm-dd hh24:mi') WHERE code_date = '120230621'
+			
+			String query = "UPDATE ATTEND_TABLE SET center_out = to_date ";
+			
+			// ('2023-06-21 12:05', 'yyyy-mm-dd hh24:mi') WHERE code_date = '120230621'
+			query += "('" + center_out + "', 'yyyy-mm-dd hh24:mi') WHERE code_date = '" + code_date + "'";
+			
+			System.out.println("쿼리 : " + query);
+			PreparedStatement pstmt = con.prepareStatement(query);
+			pstmt.executeUpdate(query);
+
+			sCtOut = "ctOutSuccess";
+			return sCtOut;
+		} catch (Exception e) {
+			e.printStackTrace();
+			sCtOut = "ctOutFail";
+			return sCtOut;
+		}
+
+	}
+	
+	
+	
+	public String addHo(String c_code, int ho, String code_date) {
+
+		try {
+
+			connDB();
+			
+			//UPDATE ATTEND_TABLE SET center_out = to_date ('2023-06-21 12:05', 'yyyy-mm-dd hh24:mi') WHERE code_date = '120230621'
+			
+			String query = "UPDATE CHILD_INFO SET ho = ho + ";
+			
+			//23 WHERE c_code = 1
+			query += ho + " WHERE c_code = " + c_code;
+			
+			System.out.println("쿼리 : " + query);
+			PreparedStatement pstmt = con.prepareStatement(query);
+			pstmt.executeUpdate(query);
+			
+			//UPDATE ATTEND_TABLE SET add_ho = 'added' WHERE code_date = '120230621'
+			query = "UPDATE ATTEND_TABLE SET add_ho = 'added' WHERE code_date = '";
+			query += code_date + "'";
+			pstmt.executeUpdate(query);
+			
+			sAddHo = "AddScs";
+			return sAddHo;
+		} catch (Exception e) {
+			e.printStackTrace();
+			sAddHo = "AddFail";
+			return sAddHo;
+		}
+
+	}
+	
+	
+	
 
 	public String getTjoin() {
 		return Tjoin;

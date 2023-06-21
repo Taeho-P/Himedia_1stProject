@@ -1,6 +1,7 @@
 package main_pkg;
 
 import java.awt.Button;
+import java.awt.Dialog;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.Label;
@@ -29,6 +30,7 @@ public class ChildMain extends WindowAdapter implements ActionListener {
 	private LocalDateTime now;
 	private CenterDAO cDAO;
 	private Calendar cal;
+	private Dialog dCaution, atndScs; 
 
 	public ChildMain(ChildVo cInfo) {
 		this.cInfo = cInfo;
@@ -77,12 +79,69 @@ public class ChildMain extends WindowAdapter implements ActionListener {
 			lf = new Login_Frame();
 			fCMain.dispose();
 		}
+		if (e.getComponent() == dCaution) {
+			dCaution.dispose();
+		}
+		
+		if (e.getComponent() == atndScs) {
+			dCaution.dispose();
+		}
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getActionCommand().equals("attend")) {
-			System.out.println("등원하원 클릭");
+		
+		//등원, 하원 성공 메시지 다이얼로그 확인버튼 구현
+		if(e.getActionCommand().equals("atndScs")) {
+			dCaution.dispose();
+		}
+		
+		//하원하기 다이얼로그 -> 하원확인 클릭 시 구현
+		if (e.getActionCommand().equals("ctOut")) {
+
+			now = LocalDateTime.now();
+			String sNow = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+			String sNow2 = now.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+			String sCode_Date = cInfo.getC_code() + sNow2;
+
+			String sCenter_out = sNow;
+
+			String atndCheck = null;
+
+			atndCheck = cDAO.center_OUT(sCenter_out, sCode_Date);
+
+			System.out.println("출석 입력 상태 : " + atndCheck);
+			
+			if (atndCheck.equals("ctOutSuccess")) {
+				atndScs = new Dialog(dCaution, "호야 지역아동센터", true);
+				Image icon = new ImageIcon("./src/icon.png").getImage();
+				atndScs.setIconImage(icon);
+				atndScs.setSize(300, 190);
+				atndScs.setLocationRelativeTo(null);
+				atndScs.setLayout(null);
+				atndScs.addWindowListener(this);
+				atndScs.setResizable(false);
+				Label msg = new Label("하원 완료됐습니다.");
+				msg.setBounds(100, 80, 100, 25);
+				
+				Button bOK = new Button("확인");
+				bOK.setBounds(124, 120, 50, 30);
+				bOK.addActionListener(this);
+				bOK.setActionCommand("atndScs");
+				
+				atndScs.addWindowListener(this);
+				atndScs.add(bOK);
+				atndScs.add(msg);
+				atndScs.setVisible(true);
+			}
+			
+		}
+		
+		
+		
+		
+		//출석 확인 다이얼로그 -> 확인버튼 클릭 시 구현
+		if (e.getActionCommand().equals("atndOK")) {
 
 			int iDay = cal.get(Calendar.DAY_OF_WEEK);
 
@@ -93,6 +152,7 @@ public class ChildMain extends WindowAdapter implements ActionListener {
 			String sC_code = cInfo.getC_code();
 			String sC_name = cInfo.getC_name();
 			String sCenter_in = sNow;
+
 			String sAttend_day = null;
 
 			switch (iDay) {
@@ -126,35 +186,109 @@ public class ChildMain extends WindowAdapter implements ActionListener {
 				break;
 
 			}
-			System.out.println(sAttend_day);
+
+			String atndCheck = null;
+
+			atndCheck = cDAO.center_IN(sC_code, sC_name, sCenter_in, sAttend_day, sCode_Date);
+
+			System.out.println("출석 입력 상태 : " + atndCheck); //
+			
+			if (atndCheck.equals("atndSuccess")) {
+				atndScs = new Dialog(dCaution, "호야 지역아동센터", true);
+				Image icon = new ImageIcon("./src/icon.png").getImage();
+				atndScs.setIconImage(icon);
+				atndScs.setSize(300, 190);
+				atndScs.setLocationRelativeTo(null);
+				atndScs.setLayout(null);
+				atndScs.addWindowListener(this);
+				atndScs.setResizable(false);
+				Label msg = new Label("출석 완료됐습니다.");
+				msg.setBounds(100, 80, 100, 25);
+				
+				Button bOK = new Button("확인");
+				bOK.setBounds(124, 120, 50, 30);
+				bOK.addActionListener(this);
+				bOK.setActionCommand("atndScs");
+				
+				atndScs.addWindowListener(this);
+				atndScs.add(bOK);
+				atndScs.add(msg);
+				atndScs.setVisible(true);
+			}
+			
+		}
+
+		// 등원/하원하기 버튼 구현
+		if (e.getActionCommand().equals("attend")) {
+			
+
+			now = LocalDateTime.now();
+			String sNow = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+			String sNow2 = now.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+			String sCode_Date = cInfo.getC_code() + sNow2;
+
 
 			System.out.println("현재 시간 : " + sNow);
 			System.out.println("아동 코드 + 현재 시간 : " + sCode_Date);
 
 			String[] IorO;
 			cDAO = new CenterDAO();
-			IorO = cDAO.inOrOutCheck("120230620"); // sNow 입력
+			IorO = cDAO.inOrOutCheck(sCode_Date);
 
 			for (int i = 0; i < IorO.length; i++) {
 				System.out.println(IorO[i]);
 			}
 
-			String atndCheck = null;
-
 			if (IorO[0].equals("in")) {
-				atndCheck = cDAO.center_IN(sC_code, sC_name, sCenter_in, sAttend_day, sCode_Date);
+				showCaution(sNow, "출석합니다.", "atndOK");
+				
 			} else if (IorO[0].equals("out")) {
-
+				showCaution(sNow, "하원합니다.", "ctOut");
+			} else {
+				showCaution(" 이미 하원처리가", "완료됐습니다.", "atndScs");
 			}
-
-			System.out.println("출석 입력 상태 : " + atndCheck);
 
 		}
 		if (e.getActionCommand().equals("ho")) {
 			System.out.println("지갑조회 클릭");
+			new OpenWallet(cInfo);
+			fCMain.dispose();
+			
 		}
 		if (e.getActionCommand().equals("sgst")) {
 			System.out.println("건의함 클릭");
 		}
 	}
+
+	
+	//주의 다이얼로그 생성 메소드
+	public void showCaution(String msg1, String msg2, String msg3) {
+		dCaution = new Dialog(fCMain, "호야 지역아동센터", true);
+		dCaution.setSize(300, 190);
+		dCaution.setLocationRelativeTo(null);
+		dCaution.setLayout(null);
+		dCaution.addWindowListener(this);
+		dCaution.setResizable(false);
+		Image icon = new ImageIcon("./src/icon.png").getImage();
+		dCaution.setIconImage(icon);
+
+		Label lMsg1 = new Label(msg1);
+		lMsg1.setSize(93, 25);
+		lMsg1.setLocation(71, 70);
+
+		Label lMsg2 = new Label(msg2);
+		lMsg2.setSize(80, 25);
+		lMsg2.setLocation(168, 70);
+
+		Button bCheck = new Button("확인");
+		bCheck.addActionListener(this);
+		bCheck.setBounds(124, 110, 50, 30);
+		bCheck.setActionCommand(msg3);
+
+		dCaution.add(lMsg1);
+		dCaution.add(lMsg2);
+		dCaution.add(bCheck);
+		dCaution.setVisible(true);
+	}
+
 }
