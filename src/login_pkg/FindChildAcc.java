@@ -5,6 +5,7 @@ import java.awt.Checkbox;
 import java.awt.CheckboxGroup;
 import java.awt.Choice;
 import java.awt.Dialog;
+import java.awt.Font;
 import java.awt.Image;
 import java.awt.Label;
 import java.awt.TextField;
@@ -15,6 +16,7 @@ import java.awt.event.WindowEvent;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 
 import db_pkg.CenterDAO;
 
@@ -28,6 +30,7 @@ public class FindChildAcc extends WindowAdapter implements ActionListener {
 	private Button bFind, btCau, btFindPw;
 	private Dialog dCaution;
 	private FindChildPw fpw;
+	private Font fDfont;
 
 	private CenterDAO cDAO;
 
@@ -113,6 +116,8 @@ public class FindChildAcc extends WindowAdapter implements ActionListener {
 		fFindAcc.add(tfName);
 		fFindAcc.add(tfParent);
 
+		fFindAcc.addWindowListener(this);
+
 		fFindAcc.add(bFind);
 
 		fFindAcc.setVisible(true);
@@ -138,8 +143,9 @@ public class FindChildAcc extends WindowAdapter implements ActionListener {
 
 		if (e.getActionCommand().equals("find")) {
 			if (tfName.getText().equals("") || tfParent.getText().equals("")) {
-				showCaution("비어있는 항목이 있습니다.", "모두 입력해주세요.");
+				showCaution("<html><body><center>비어있는 항목이 있습니다. <br>모두 입력해주세요.</center></body></html>");
 				return;
+
 			}
 
 			String sCName = tfName.getText();
@@ -161,29 +167,36 @@ public class FindChildAcc extends WindowAdapter implements ActionListener {
 
 			if (sFindId.equals(" ")) {
 				System.out.println("일치하는 아이디 없음");
-				showCaution("일치하는 계정이 없습니다.", "입력정보를 확인해주세요.");
+				showCaution("<html><body><center>일치하는 계정이 없습니다.<br>입력정보를 확인해주세요.</center></body></html>");
+
 			} else {
 				System.out.println(sFindId);
 				showAcc(tfName.getText() + "님의 아이디는", sFindId);
-				
+
 			}
 		}
 
 	}
 
 	public void windowClosing(WindowEvent e) {
+		if (e.getComponent() == fFindAcc) {
+			new Login_Frame();
+			fFindAcc.dispose();
+		}
 		if (e.getComponent() == dCaution) {
 			dCaution.dispose();
 		}
 	}
 
 	public void showAcc(String msg1, String Id) {
-		dCaution = new Dialog(fFindAcc, "Notice", true);
+		dCaution = new Dialog(fFindAcc, "호야 지역아동센터", true);
 		dCaution.setSize(280, 170);
 		dCaution.setLocationRelativeTo(null);
 		dCaution.setLayout(null);
 		dCaution.addWindowListener(this);
 		dCaution.setResizable(false);
+		Image icon = new ImageIcon("./src/icon.png").getImage();
+		dCaution.setIconImage(icon);
 
 		Label lMsg1 = new Label(msg1);
 		lMsg1.setSize(230, 23);
@@ -197,7 +210,7 @@ public class FindChildAcc extends WindowAdapter implements ActionListener {
 		btCau.setBounds(48, 100, 85, 30);
 		btCau.addActionListener(this);
 		btCau.setActionCommand("goLogin");
-		
+
 		btFindPw = new Button("비밀번호 찾기");
 		btFindPw.setBounds(146, 100, 85, 30);
 		btFindPw.addActionListener(this);
@@ -210,21 +223,23 @@ public class FindChildAcc extends WindowAdapter implements ActionListener {
 		dCaution.setVisible(true);
 	}
 
-	public void showCaution(String msg1, String msg2) {
-		dCaution = new Dialog(fFindAcc, "Notice", true);
+	public void showCaution(String msg1) {
+		dCaution = new Dialog(fFindAcc, "호야 지역아동센터", true);
 		dCaution.setSize(280, 170);
 		dCaution.setLocationRelativeTo(null);
 		dCaution.setLayout(null);
 		dCaution.addWindowListener(this);
 		dCaution.setResizable(false);
+		Image icon = new ImageIcon("./src/icon.png").getImage();
+		dCaution.setIconImage(icon);
 
-		Label lMsg1 = new Label(msg1);
-		lMsg1.setSize(230, 23);
-		lMsg1.setLocation(70, 45);
+		fDfont = new Font("SansSerif", Font.PLAIN, 12);
 
-		Label lMsg2 = new Label(msg2);
-		lMsg2.setSize(230, 25);
-		lMsg2.setLocation(70, 65);
+		JLabel lMsg1 = new JLabel(msg1);
+		lMsg1.setSize(280, 50);
+		lMsg1.setFont(fDfont);
+		lMsg1.setLocation(0, 45);
+		lMsg1.setHorizontalAlignment(JLabel.CENTER);
 
 		btCau = new Button("확인");
 		btCau.setBounds(113, 100, 50, 30);
@@ -233,7 +248,6 @@ public class FindChildAcc extends WindowAdapter implements ActionListener {
 
 		dCaution.add(btCau);
 		dCaution.add(lMsg1);
-		dCaution.add(lMsg2);
 		dCaution.setVisible(true);
 	}
 }

@@ -6,6 +6,7 @@ import java.awt.CheckboxGroup;
 import java.awt.Choice;
 import java.awt.Color;
 import java.awt.Dialog;
+import java.awt.Font;
 import java.awt.Image;
 import java.awt.Label;
 import java.awt.TextField;
@@ -16,6 +17,7 @@ import java.awt.event.WindowEvent;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 
 import db_pkg.CenterDAO;
 
@@ -30,6 +32,7 @@ public class TeacherJoin extends WindowAdapter implements ActionListener {
 	private Dialog dCaution;
 	private CenterDAO id_Check;
 	private String sGender;
+	private Font fDfont;
 
 	public TeacherJoin() {
 	}
@@ -103,10 +106,10 @@ public class TeacherJoin extends WindowAdapter implements ActionListener {
 
 		cgGender = new CheckboxGroup();
 		cbM = new Checkbox("남", cgGender, true);
-		cbM.setBounds(135, 165, 50, 20);
+		cbM.setBounds(135, 162, 50, 20);
 
-		cbF = new Checkbox("여", cgGender, true);
-		cbF.setBounds(185, 165, 50, 20);
+		cbF = new Checkbox("여", cgGender, false);
+		cbF.setBounds(185, 162, 50, 20);
 
 		tfCall = new TextField(20); // 연락처 입력창
 		tfCall.setBounds(125, 193, 160, 20);
@@ -186,21 +189,23 @@ public class TeacherJoin extends WindowAdapter implements ActionListener {
 		}
 	}
 
-	public void failJoin(String msg1, String msg2) {
-		dCaution = new Dialog(fTJoin, "Notice", true);
+	public void failJoin(String msg1) {
+		dCaution = new Dialog(fTJoin, "호야 지역아동센터", true);
 		dCaution.setSize(280, 170);
 		dCaution.setLocationRelativeTo(null);
 		dCaution.setLayout(null);
 		dCaution.addWindowListener(this);
 		dCaution.setResizable(false);
+		Image icon = new ImageIcon("./src/icon.png").getImage();
+		dCaution.setIconImage(icon);
 
-		Label lMsg1 = new Label(msg1);
-		lMsg1.setSize(230, 23);
-		lMsg1.setLocation(85, 45);
+		fDfont = new Font("SansSerif", Font.PLAIN, 12);
 
-		Label lMsg2 = new Label(msg2);
-		lMsg2.setSize(230, 25);
-		lMsg2.setLocation(85, 65);
+		JLabel lMsg1 = new JLabel(msg1);
+		lMsg1.setSize(280, 50);
+		lMsg1.setFont(fDfont);
+		lMsg1.setLocation(0, 45);
+		lMsg1.setHorizontalAlignment(JLabel.CENTER);
 
 		btCau = new Button("확인");
 		btCau.setBounds(113, 100, 50, 30);
@@ -209,7 +214,6 @@ public class TeacherJoin extends WindowAdapter implements ActionListener {
 
 		dCaution.add(btCau);
 		dCaution.add(lMsg1);
-		dCaution.add(lMsg2);
 		dCaution.setVisible(true);
 	}
 
@@ -248,22 +252,22 @@ public class TeacherJoin extends WindowAdapter implements ActionListener {
 			if (lIdCheck1.isVisible()) {
 
 			} else {
-				failJoin("", "아이디를 확인해주세요.");
+				failJoin("아이디를 확인해주세요.");
 				return;
 			} // 아이디 중복확인 여부 검사
 
 			if (!(tfPw.getText().equals("")) && tfPw.getText().equals(tfPwCheck.getText())) {
 				System.out.println("비밀번호 통과");
 			} else if (tfPw.getText().equals("")) {
-				failJoin("", "비밀번호를 넣어주세요.");
+				failJoin("비밀번호를 넣어주세요.");
 				return;
 			} else {
-				failJoin("", "비밀번호 확인이 다릅니다.");
+				failJoin("비밀번호가 일치하지 않습니다.");
 				return;
 			} // 비밀번호 확인 검사
 
 			if (tfName.getText().equals("")) {
-				failJoin("", "이름을 입력해주세요.");
+				failJoin("이름을 입력해주세요.");
 				return;
 			} else {
 				System.out.println(tfName.getText());
@@ -283,12 +287,12 @@ public class TeacherJoin extends WindowAdapter implements ActionListener {
 				int iCall = Integer.parseInt(sCall);
 				System.out.println(sCall);
 			} catch (NumberFormatException e1) {
-				failJoin("연락처를 숫자만 이용해서", "입력해주세요.");
+				failJoin("연락처를 숫자로만 입력해주세요.");
 				return;
 			}
 
 			if (tfEmail.getText().equals("")) {
-				failJoin("", "이메일을 입력해주세요.");
+				failJoin("이메일을 입력해주세요.");
 				return;
 			} else {
 				System.out.println(tfEmail.getText());
@@ -314,17 +318,17 @@ public class TeacherJoin extends WindowAdapter implements ActionListener {
 
 			if (bLeapYear && iM == 2) {
 				if (iD > 29) {
-					failJoin("해당 달은 윤달입니다.", "날짜를 확인해주세요.");
+					failJoin("<html><body><center>해당 달은 윤달입니다.<br> 날짜를 확인해주세요.</center></body></html>");
 					return;
 				}
 			} else if (iM == 2) {
 				if (iD > 28) {
-					failJoin("해당 달은 2월입니다.", "날짜를 확인해주세요.");
+					failJoin("<html><body><center>해당 달은 2월입니다.<br>날짜를 확인해주세요.</center></body></html>");
 					return;
 				}
 			} else if (iM == 4 || iM == 6 || iM == 9 || iM == 11) {
 				if (iD > 30) {
-					failJoin("해당 달은 30일까지입니다.", "날짜를 확인해주세요.");
+					failJoin("<html><body><center>해당 달은 30일까지입니다.<br> 날짜를 확인해주세요.</center></body></html>");
 					return;
 				}
 
@@ -333,7 +337,7 @@ public class TeacherJoin extends WindowAdapter implements ActionListener {
 			String sCenterCheck;
 
 			if (tfCcode.getText().equals("")) {
-				failJoin("", "학원코드를 입력해주세요.");
+				failJoin("학원코드를 입력해주세요.");
 				return;
 			} else {
 				id_Check = new CenterDAO();
@@ -341,7 +345,7 @@ public class TeacherJoin extends WindowAdapter implements ActionListener {
 			}
 
 			if (sCenterCheck.equals("unsame")) {
-				failJoin("학원코드가 다릅니다.", "다시 입력해주세요.");
+				failJoin("학원코드가 다릅니다. 다시 입력해주세요.");
 				return;
 			}
 
@@ -371,9 +375,9 @@ public class TeacherJoin extends WindowAdapter implements ActionListener {
 
 			if (JoinCheck.equals("JoinSuccess")) {
 				fTJoin.dispose();
-				failJoin("", "가입이 완료됐습니다.");
+				failJoin("선생님 등록이 완료되었습니다.");
 			} else {
-				failJoin("", "가입에 실패했습니다.");
+				failJoin("선생님 등록에 실패했습니다.");
 			}
 		}
 	}

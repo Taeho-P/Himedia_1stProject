@@ -22,7 +22,8 @@ public class CenterDAO {
 	private String sAtnd;
 	private String sCtOut;
 	private String sAddHo;
-	
+	private String sSgst;
+
 	public ArrayList<TeacherVo> teacherList(String id) {
 		ArrayList<TeacherVo> list = new ArrayList<TeacherVo>();
 
@@ -247,7 +248,7 @@ public class CenterDAO {
 				System.out.println("0 row selected...");
 				System.out.println("일치하는 기록이 없습니다.");
 				sCheck[0] = "in";
-			} else if (rs.getString("center_out") == null){
+			} else if (rs.getString("center_out") == null) {
 				System.out.println(rs.getRow() + "rows selected...");
 				sCheck[0] = "out";
 				sCheck[1] = rs.getString("center_in");
@@ -346,22 +347,20 @@ public class CenterDAO {
 
 	}
 
-	// c_code, c_name, center_in, attend_day, code_date
-
 	public String center_IN(String c_code, String c_name, String center_in, String attend_day, String code_Date) {
 
 		try {
 
 			connDB();
-			// VALUES (1, '박호야', to_date ('2023-06-20 19:07', 'yyyy-mm-dd hh24:mi'), '화',
-			// '120230620')
+
 			System.out.println("쿼리에 들어갈 날짜 : " + center_in);
-			// c_code, c_name, center_in, attend_day, code_date
+
 			String query = "INSERT INTO ATTEND_TABLE (c_code, c_name, center_in, attend_day, code_date) VALUES (";
 			query += c_code + ", '" + c_name + "', to_date ('" + center_in + "', 'yyyy-mm-dd hh24:mi'), '" + attend_day
 					+ "', '" + code_Date + "')";
-			
+
 			System.out.println("쿼리 : " + query);
+
 			PreparedStatement pstmt = con.prepareStatement(query);
 			pstmt.executeUpdate(query);
 
@@ -374,21 +373,15 @@ public class CenterDAO {
 		}
 
 	}
-	
-	
+
 	public String center_OUT(String center_out, String code_date) {
 
 		try {
 
 			connDB();
-			
-			//UPDATE ATTEND_TABLE SET center_out = to_date ('2023-06-21 12:05', 'yyyy-mm-dd hh24:mi') WHERE code_date = '120230621'
-			
 			String query = "UPDATE ATTEND_TABLE SET center_out = to_date ";
-			
-			// ('2023-06-21 12:05', 'yyyy-mm-dd hh24:mi') WHERE code_date = '120230621'
 			query += "('" + center_out + "', 'yyyy-mm-dd hh24:mi') WHERE code_date = '" + code_date + "'";
-			
+
 			System.out.println("쿼리 : " + query);
 			PreparedStatement pstmt = con.prepareStatement(query);
 			pstmt.executeUpdate(query);
@@ -402,31 +395,24 @@ public class CenterDAO {
 		}
 
 	}
-	
-	
-	
+
 	public String addHo(String c_code, int ho, String code_date) {
 
 		try {
 
 			connDB();
-			
-			//UPDATE ATTEND_TABLE SET center_out = to_date ('2023-06-21 12:05', 'yyyy-mm-dd hh24:mi') WHERE code_date = '120230621'
-			
+
 			String query = "UPDATE CHILD_INFO SET ho = ho + ";
-			
-			//23 WHERE c_code = 1
 			query += ho + " WHERE c_code = " + c_code;
-			
+
 			System.out.println("쿼리 : " + query);
 			PreparedStatement pstmt = con.prepareStatement(query);
 			pstmt.executeUpdate(query);
-			
-			//UPDATE ATTEND_TABLE SET add_ho = 'added' WHERE code_date = '120230621'
+
 			query = "UPDATE ATTEND_TABLE SET add_ho = 'added' WHERE code_date = '";
 			query += code_date + "'";
 			pstmt.executeUpdate(query);
-			
+
 			sAddHo = "AddScs";
 			return sAddHo;
 		} catch (Exception e) {
@@ -436,9 +422,50 @@ public class CenterDAO {
 		}
 
 	}
-	
-	
-	
+
+	public String sgstUpdate(String c_code, String c_name, String title, String write_date, String body) {
+
+		int iSgst_no = 0;
+
+		try {
+
+			connDB();
+
+			String query = "SELECT max(sgst_no) AS sgst_no FROM sgst_box";
+
+			rs = stmt.executeQuery(query);
+			rs.last();
+
+			iSgst_no = rs.getInt("sgst_no");
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			sSgst = "sgstFail";
+			return sSgst;
+		}
+
+		try {
+
+			String query = "INSERT INTO sgst_box (c_code, c_name, title, write_date, body, sgst_no) VALUES (?, ?, ?, to_date (?, 'yyyy-mm-dd hh24:mi'), ?, ?)";
+
+			PreparedStatement pstmt = con.prepareStatement(query);
+			pstmt.setInt(1, Integer.parseInt(c_code));
+			pstmt.setString(2, c_name);
+			pstmt.setString(3, title);
+			pstmt.setString(4, write_date);
+			pstmt.setString(5, body);
+			pstmt.setInt(6, iSgst_no + 1);
+			pstmt.executeUpdate();
+
+			sSgst = "sgstScs";
+			return sSgst;
+		} catch (Exception e) {
+			e.printStackTrace();
+			sSgst = "sgstFail";
+			return sSgst;
+		}
+
+	}
 
 	public String getTjoin() {
 		return Tjoin;

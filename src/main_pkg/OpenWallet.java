@@ -2,6 +2,7 @@ package main_pkg;
 
 import java.awt.Button;
 import java.awt.Dialog;
+import java.awt.Font;
 import java.awt.Image;
 import java.awt.Label;
 import java.awt.event.ActionEvent;
@@ -13,6 +14,7 @@ import java.time.format.DateTimeFormatter;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 
 import db_pkg.CenterDAO;
 import db_pkg.ChildVo;
@@ -26,8 +28,8 @@ public class OpenWallet extends WindowAdapter implements ActionListener {
 	private CenterDAO cDAO;
 	private Dialog dCaution;
 	private String sCode_Date;
-	
-	
+	private Font fDfont;
+
 	public OpenWallet(ChildVo cInfo) {
 		this.cInfo = cInfo;
 
@@ -44,7 +46,7 @@ public class OpenWallet extends WindowAdapter implements ActionListener {
 
 		lMsg2 = new Label(cInfo.getHo() + "호");
 		lMsg2.setBounds(135, 50, 70, 25);
-		
+
 		bGetHo = new Button("호 받기");
 		bGetHo.setBounds(60, 100, 70, 30);
 		bGetHo.addActionListener(this);
@@ -55,7 +57,6 @@ public class OpenWallet extends WindowAdapter implements ActionListener {
 		bOK.addActionListener(this);
 		bOK.setActionCommand("ok");
 
-		
 		fWallet.addWindowListener(this);
 		fWallet.add(bOK);
 		fWallet.add(bGetHo);
@@ -69,13 +70,12 @@ public class OpenWallet extends WindowAdapter implements ActionListener {
 		if (e.getActionCommand().equals("noGet")) {
 			dCaution.dispose();
 		}
-		
+
 		if (e.getActionCommand().equals("getHo")) {
 			now = LocalDateTime.now();
 			String sNow = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
 			String sNow2 = now.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 			this.sCode_Date = cInfo.getC_code() + sNow2;
-
 
 			System.out.println("현재 시간 : " + sNow);
 			System.out.println("아동 코드 + 현재 시간 : " + sCode_Date);
@@ -89,11 +89,11 @@ public class OpenWallet extends WindowAdapter implements ActionListener {
 			}
 
 			if (IorO[0].equals("in")) {
-				showCaution(" 오늘 출석체크를", "진행해주세요.", "noGet");
+				showCaution(" 오늘 출석체크를 진행해주세요.", "noGet");
 			} else if (IorO[0].equals("out")) {
-				showCaution(" 오늘 하원체크를", "진행해주세요.", "noGet");
+				showCaution(" 오늘 하원체크를 진행해주세요.", "noGet");
 			} else if (IorO[0].equals("HoAdded")) {
-				showCaution(" 오늘의 호가 이미", "지급됐습니다.", "noGet");
+				showCaution(" 오늘의 호가 이미 지급됐습니다.", "noGet");
 			} else {
 				String sIn = IorO[1];
 				System.out.println(sIn);
@@ -101,15 +101,15 @@ public class OpenWallet extends WindowAdapter implements ActionListener {
 				System.out.println(sInTime);
 				int iInTime = Integer.parseInt(sInTime);
 				System.out.println(iInTime);
-				if(iInTime >= 16) {
+				if (iInTime >= 16) {
 					String AddHo = cDAO.addHo(cInfo.getC_code(), 50, sCode_Date);
-					if(AddHo.equals("AddScs")) {
-						showCaution(now.format(DateTimeFormatter.ofPattern("yy/MM/dd")) + " 50호가", "충전됐습니다.", "addHo");
+					if (AddHo.equals("AddScs")) {
+						showCaution(now.format(DateTimeFormatter.ofPattern("yy/MM/dd")) + " 50호가 충전됐습니다.", "addHo");
 					}
 				} else {
 					String AddHo = cDAO.addHo(cInfo.getC_code(), 100, sCode_Date);
-					if(AddHo.equals("AddScs")) {
-						showCaution(now.format(DateTimeFormatter.ofPattern("yy/MM/dd")) + " 100호가", "충전됐습니다.", "addHo");
+					if (AddHo.equals("AddScs")) {
+						showCaution(now.format(DateTimeFormatter.ofPattern("yy/MM/dd")) + " 100호가 충전됐습니다.", "addHo");
 					}
 				}
 			}
@@ -119,14 +119,14 @@ public class OpenWallet extends WindowAdapter implements ActionListener {
 			new ChildMain(cInfo);
 			fWallet.dispose();
 		}
-		
+
 		if (e.getActionCommand().equals("ok")) {
 			new ChildMain(cInfo);
 			fWallet.dispose();
 		}
 
 	}
-	
+
 	public void windowClosing(WindowEvent e) {
 		if (e.getComponent() == fWallet) {
 			new ChildMain(cInfo);
@@ -136,8 +136,8 @@ public class OpenWallet extends WindowAdapter implements ActionListener {
 			dCaution.dispose();
 		}
 	}
-	
-	public void showCaution(String msg1, String msg2, String msg3) {
+
+	public void showCaution(String msg1, String msg3) {
 		dCaution = new Dialog(fWallet, "호야 지역아동센터", true);
 		dCaution.setSize(300, 190);
 		dCaution.setLocationRelativeTo(null);
@@ -147,13 +147,13 @@ public class OpenWallet extends WindowAdapter implements ActionListener {
 		Image icon = new ImageIcon("./src/icon.png").getImage();
 		dCaution.setIconImage(icon);
 
-		Label lMsg1 = new Label(msg1);
-		lMsg1.setSize(93, 25);
-		lMsg1.setLocation(71, 70);
+		fDfont = new Font("SansSerif", Font.PLAIN, 12);
 
-		Label lMsg2 = new Label(msg2);
-		lMsg2.setSize(80, 25);
-		lMsg2.setLocation(168, 70);
+		JLabel lMsg1 = new JLabel(msg1);
+		lMsg1.setSize(300, 25);
+		lMsg1.setFont(fDfont);
+		lMsg1.setLocation(0, 70);
+		lMsg1.setHorizontalAlignment(JLabel.CENTER);
 
 		Button bCheck = new Button("확인");
 		bCheck.addActionListener(this);
@@ -161,7 +161,6 @@ public class OpenWallet extends WindowAdapter implements ActionListener {
 		bCheck.setActionCommand(msg3);
 
 		dCaution.add(lMsg1);
-		dCaution.add(lMsg2);
 		dCaution.add(bCheck);
 		dCaution.setVisible(true);
 	}

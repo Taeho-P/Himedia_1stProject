@@ -37,7 +37,6 @@ public class Login_Frame extends WindowAdapter implements ActionListener {
 	private CenterDAO cDAO;
 	private Dialog dCaution;
 	private TeacherJoin tjTJ;
-	private ChildMain childMain;
 
 	Color c = new Color(255, 0, 0);
 
@@ -205,7 +204,7 @@ public class Login_Frame extends WindowAdapter implements ActionListener {
 						System.out.println("로그인 성공");
 						System.out.println(data.getC_birthday());
 						fLogin.dispose();
-						childMain = new ChildMain(data);
+						new ChildMain(data);
 
 					} else {
 						System.out.println("로그인 실패");
@@ -245,7 +244,8 @@ public class Login_Frame extends WindowAdapter implements ActionListener {
 
 		if (e.getActionCommand().equals("findAcc")) {
 			System.out.println("아동 계정찾기 버튼 클릭");
-			FindChildAcc fca = new FindChildAcc();
+			new FindChildAcc();
+			fLogin.dispose();
 
 		}
 

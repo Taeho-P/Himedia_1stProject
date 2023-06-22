@@ -7,9 +7,9 @@ public class Main {
 
 	public static void main(String[] args) {
 		 
-		//Login_Frame lf = new Login_Frame();
-		ChildVo cInfo = new ChildVo();
-		new OpenSgst(cInfo);
+		Login_Frame lf = new Login_Frame();
+//		ChildVo cInfo = new ChildVo();
+//		new OpenSgst(cInfo);
 	}
 
 }

@@ -15,6 +15,7 @@ import java.util.Calendar;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 
 import db_pkg.CenterDAO;
 import db_pkg.ChildVo;
@@ -25,12 +26,12 @@ public class ChildMain extends WindowAdapter implements ActionListener {
 	private Label lGrt;
 	private Button bAttend, bWallet, bSgst;
 	private ChildVo cInfo;
-	private Font fFont;
+	private Font fFont, fDfont;
 	private Login_Frame lf;
 	private LocalDateTime now;
 	private CenterDAO cDAO;
 	private Calendar cal;
-	private Dialog dCaution, atndScs; 
+	private Dialog dCaution, atndScs;
 
 	public ChildMain(ChildVo cInfo) {
 		this.cInfo = cInfo;
@@ -82,7 +83,7 @@ public class ChildMain extends WindowAdapter implements ActionListener {
 		if (e.getComponent() == dCaution) {
 			dCaution.dispose();
 		}
-		
+
 		if (e.getComponent() == atndScs) {
 			dCaution.dispose();
 		}
@@ -90,13 +91,13 @@ public class ChildMain extends WindowAdapter implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		
-		//등원, 하원 성공 메시지 다이얼로그 확인버튼 구현
-		if(e.getActionCommand().equals("atndScs")) {
+
+		// 등원, 하원 성공 메시지 다이얼로그 확인버튼 구현
+		if (e.getActionCommand().equals("atndScs")) {
 			dCaution.dispose();
 		}
-		
-		//하원하기 다이얼로그 -> 하원확인 클릭 시 구현
+
+		// 하원하기 다이얼로그 -> 하원확인 클릭 시 구현
 		if (e.getActionCommand().equals("ctOut")) {
 
 			now = LocalDateTime.now();
@@ -111,7 +112,7 @@ public class ChildMain extends WindowAdapter implements ActionListener {
 			atndCheck = cDAO.center_OUT(sCenter_out, sCode_Date);
 
 			System.out.println("출석 입력 상태 : " + atndCheck);
-			
+
 			if (atndCheck.equals("ctOutSuccess")) {
 				atndScs = new Dialog(dCaution, "호야 지역아동센터", true);
 				Image icon = new ImageIcon("./src/icon.png").getImage();
@@ -122,25 +123,22 @@ public class ChildMain extends WindowAdapter implements ActionListener {
 				atndScs.addWindowListener(this);
 				atndScs.setResizable(false);
 				Label msg = new Label("하원 완료됐습니다.");
-				msg.setBounds(100, 80, 100, 25);
-				
+				msg.setBounds(100, 80, 105, 25);
+
 				Button bOK = new Button("확인");
 				bOK.setBounds(124, 120, 50, 30);
 				bOK.addActionListener(this);
 				bOK.setActionCommand("atndScs");
-				
+
 				atndScs.addWindowListener(this);
 				atndScs.add(bOK);
 				atndScs.add(msg);
 				atndScs.setVisible(true);
 			}
-			
+
 		}
-		
-		
-		
-		
-		//출석 확인 다이얼로그 -> 확인버튼 클릭 시 구현
+
+		// 출석 확인 다이얼로그 -> 확인버튼 클릭 시 구현
 		if (e.getActionCommand().equals("atndOK")) {
 
 			int iDay = cal.get(Calendar.DAY_OF_WEEK);
@@ -192,7 +190,7 @@ public class ChildMain extends WindowAdapter implements ActionListener {
 			atndCheck = cDAO.center_IN(sC_code, sC_name, sCenter_in, sAttend_day, sCode_Date);
 
 			System.out.println("출석 입력 상태 : " + atndCheck); //
-			
+
 			if (atndCheck.equals("atndSuccess")) {
 				atndScs = new Dialog(dCaution, "호야 지역아동센터", true);
 				Image icon = new ImageIcon("./src/icon.png").getImage();
@@ -203,30 +201,28 @@ public class ChildMain extends WindowAdapter implements ActionListener {
 				atndScs.addWindowListener(this);
 				atndScs.setResizable(false);
 				Label msg = new Label("출석 완료됐습니다.");
-				msg.setBounds(100, 80, 100, 25);
-				
+				msg.setBounds(100, 80, 105, 25);
+
 				Button bOK = new Button("확인");
 				bOK.setBounds(124, 120, 50, 30);
 				bOK.addActionListener(this);
 				bOK.setActionCommand("atndScs");
-				
+
 				atndScs.addWindowListener(this);
 				atndScs.add(bOK);
 				atndScs.add(msg);
 				atndScs.setVisible(true);
 			}
-			
+
 		}
 
 		// 등원/하원하기 버튼 구현
 		if (e.getActionCommand().equals("attend")) {
-			
 
 			now = LocalDateTime.now();
 			String sNow = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
 			String sNow2 = now.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 			String sCode_Date = cInfo.getC_code() + sNow2;
-
 
 			System.out.println("현재 시간 : " + sNow);
 			System.out.println("아동 코드 + 현재 시간 : " + sCode_Date);
@@ -240,12 +236,12 @@ public class ChildMain extends WindowAdapter implements ActionListener {
 			}
 
 			if (IorO[0].equals("in")) {
-				showCaution(sNow, "출석합니다.", "atndOK");
-				
+				showCaution(sNow + " 출석합니다.", "atndOK");
+
 			} else if (IorO[0].equals("out")) {
-				showCaution(sNow, "하원합니다.", "ctOut");
+				showCaution(sNow + " 하원합니다.", "ctOut");
 			} else {
-				showCaution(" 이미 하원처리가", "완료됐습니다.", "atndScs");
+				showCaution(" 이미 하원처리가 완료됐습니다.", "atndScs");
 			}
 
 		}
@@ -253,16 +249,17 @@ public class ChildMain extends WindowAdapter implements ActionListener {
 			System.out.println("지갑조회 클릭");
 			new OpenWallet(cInfo);
 			fCMain.dispose();
-			
+
 		}
 		if (e.getActionCommand().equals("sgst")) {
 			System.out.println("건의함 클릭");
+			new OpenSgst(cInfo);
+			fCMain.dispose();
 		}
 	}
 
-	
-	//주의 다이얼로그 생성 메소드
-	public void showCaution(String msg1, String msg2, String msg3) {
+	// 주의 다이얼로그 생성 메소드
+	public void showCaution(String msg1, String msg3) {
 		dCaution = new Dialog(fCMain, "호야 지역아동센터", true);
 		dCaution.setSize(300, 190);
 		dCaution.setLocationRelativeTo(null);
@@ -272,13 +269,13 @@ public class ChildMain extends WindowAdapter implements ActionListener {
 		Image icon = new ImageIcon("./src/icon.png").getImage();
 		dCaution.setIconImage(icon);
 
-		Label lMsg1 = new Label(msg1);
-		lMsg1.setSize(93, 25);
-		lMsg1.setLocation(71, 70);
+		fDfont = new Font("SansSerif", Font.PLAIN, 12);
 
-		Label lMsg2 = new Label(msg2);
-		lMsg2.setSize(80, 25);
-		lMsg2.setLocation(168, 70);
+		JLabel lMsg1 = new JLabel(msg1);
+		lMsg1.setSize(300, 25);
+		lMsg1.setFont(fDfont);
+		lMsg1.setLocation(0, 70);
+		lMsg1.setHorizontalAlignment(JLabel.CENTER);
 
 		Button bCheck = new Button("확인");
 		bCheck.addActionListener(this);
@@ -286,7 +283,6 @@ public class ChildMain extends WindowAdapter implements ActionListener {
 		bCheck.setActionCommand(msg3);
 
 		dCaution.add(lMsg1);
-		dCaution.add(lMsg2);
 		dCaution.add(bCheck);
 		dCaution.setVisible(true);
 	}
