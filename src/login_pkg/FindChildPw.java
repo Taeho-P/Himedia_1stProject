@@ -135,6 +135,7 @@ public class FindChildPw extends WindowAdapter implements ActionListener {
 		if (e.getActionCommand().equals("goLogin")) {
 			fFindAcc.dispose();
 			dCaution.dispose();
+			new Login_Frame();
 			return;
 		}
 		if (e.getActionCommand().equals("ok")) {

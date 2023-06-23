@@ -227,7 +227,7 @@ public class TeacherJoin extends WindowAdapter implements ActionListener {
 			} else {
 				String check;
 				id_Check = new CenterDAO();
-				check = id_Check.T_ID_Check(tfId.getText());
+				check = id_Check.C_ID_Check(tfId.getText());
 
 				if (check.equals("joinable")) {
 					lIdCheck1.setVisible(true);

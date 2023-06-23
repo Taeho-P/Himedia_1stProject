@@ -23,6 +23,7 @@ import db_pkg.ChildVo;
 import db_pkg.TeacherVo;
 import join_pkg.TeacherJoin;
 import main_pkg.ChildMain;
+import main_pkg.TeacherMain;
 import tool_pkg.ImagePanel;
 
 public class Login_Frame extends WindowAdapter implements ActionListener {
@@ -177,7 +178,8 @@ public class Login_Frame extends WindowAdapter implements ActionListener {
 
 					if (getPW().equals(pw)) {
 						System.out.println("로그인 성공");
-						System.out.println(data.getHire_date());
+						new TeacherMain(data);
+						fLogin.dispose();
 
 						return;
 

@@ -19,6 +19,7 @@ public class CenterDAO {
 	private ResultSet rs;
 
 	private String Tjoin;
+	private String Cjoin;
 	private String sAtnd;
 	private String sCtOut;
 	private String sAddHo;
@@ -230,6 +231,36 @@ public class CenterDAO {
 		return sCheck;
 
 	}
+	
+	public String C_ID_Check(String id) {
+
+		String sCheck = null;
+		try {
+			connDB();
+
+			String query = "SELECT id FROM child_info";
+			query += " where id like '" + id + "'";
+			System.out.println("SQL : " + query);
+
+			rs = stmt.executeQuery(query);
+			rs.last();
+
+			if (rs.getRow() == 0) {
+				System.out.println("0 row selected...");
+				System.out.println("일치하는 아이디가 없습니다.");
+				sCheck = "joinable";
+			} else {
+				System.out.println(rs.getRow() + "rows selected...");
+				sCheck = "joinunable";
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return sCheck;
+
+	}
 
 	public String[] inOrOutCheck(String code_date) {
 
@@ -343,6 +374,58 @@ public class CenterDAO {
 		} catch (Exception e) {
 			e.printStackTrace();
 			Tjoin = "JoinFail";
+		}
+
+	}
+	
+	//String id, String pw, String c_name, String c_birthday, String gender, String c_call, String father, String mother, String school, String image
+	
+	public void ChildJoin(String id, String pw, String c_name, String c_birthday, String gender, String c_call,
+			String father, String mother, String school, String image) {
+
+		String sC_code = null;
+		int iC_code = 0;
+
+		try {
+
+			connDB();
+
+			String query = "SELECT max(c_code) AS c_code FROM child_INFO";
+			rs = stmt.executeQuery(query);
+			rs.last();
+
+			sC_code = rs.getString("c_code");
+			iC_code = Integer.parseInt(sC_code);
+
+			System.out.println(iC_code);
+		} catch (Exception e) {
+			e.printStackTrace();
+			Cjoin = "JoinFail";
+		}
+
+		//String id, String pw, String c_name, String c_birthday, String gender, String c_call, String father, String mother, String school, String image
+		
+		try {
+			String query = "INSERT INTO child_info(c_code, id, password, c_name, c_birthday, gender, c_call, father, mother, school, ho, image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			PreparedStatement pstmt = con.prepareStatement(query);
+			pstmt.setInt(1, iC_code + 1);
+			pstmt.setString(2, id);
+			pstmt.setString(3, pw);
+			pstmt.setString(4, c_name);
+			pstmt.setString(5, c_birthday);
+			pstmt.setString(6, gender);
+			pstmt.setString(7, c_call);
+			pstmt.setString(8, father);
+			pstmt.setString(9, mother);
+			pstmt.setString(10, school);
+			pstmt.setInt(11, 1000);
+			pstmt.setString(12, image);
+			pstmt.executeUpdate();
+
+			Cjoin = "JoinSuccess";
+		} catch (Exception e) {
+			e.printStackTrace();
+			Cjoin = "JoinFail";
 		}
 
 	}
@@ -469,6 +552,10 @@ public class CenterDAO {
 
 	public String getTjoin() {
 		return Tjoin;
+	}
+	
+	public String getCjoin() {
+		return Cjoin;
 	}
 
 	public void connDB() {
