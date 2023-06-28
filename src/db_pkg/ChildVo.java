@@ -4,7 +4,7 @@ import java.sql.Blob;
 
 public class ChildVo {
 	private String c_code;
-	private Blob image;
+	private String image;
 	private String id;
 	private String password;
 	private String c_name;
@@ -22,7 +22,7 @@ public class ChildVo {
 		
 	}
 	
-	public ChildVo(String c_code, Blob image, String id, String password, String c_name, String c_birthday, String gender, String c_call, String father, String mother, String school, String ho) {
+	public ChildVo(String c_code, String image, String id, String password, String c_name, String c_birthday, String gender, String c_call, String father, String mother, String school, String ho) {
 		this.c_code = c_code;//
 		this.image = image;
 		this.id = id;//
@@ -41,7 +41,7 @@ public class ChildVo {
 		return c_code;
 	}
 	
-	public Blob getImage() {
+	public String getImage() {
 		return image;
 	}
 	

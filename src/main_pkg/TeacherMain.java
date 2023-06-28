@@ -100,12 +100,21 @@ public class TeacherMain extends WindowAdapter implements ActionListener {
 		}
 		if (e.getActionCommand().equals("OpenSgst")) {
 			System.out.println("건의함 열람 클릭");
+			new OpenSgstBox(tInfo);
+			fTMain.dispose();
 		}
 		if (e.getActionCommand().equals("ChildInfo")) {
 			System.out.println("아동 관리 클릭");
+			new ChildList(tInfo);
+			fTMain.dispose();
 		}
 		if (e.getActionCommand().equals("attend")) {
 			System.out.println("월별 출석 조회 클릭");
+		}
+		if (e.getActionCommand().equals("grdChild")) {
+			System.out.println("아동 졸업 클릭");
+			fTMain.dispose();
+			new GraduateChild(tInfo);
 		}
 
 	}

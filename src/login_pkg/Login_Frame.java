@@ -42,6 +42,9 @@ public class Login_Frame extends WindowAdapter implements ActionListener {
 	Color c = new Color(255, 0, 0);
 
 	public Login_Frame() {
+		cDAO = new CenterDAO();
+		cDAO.createAttendRecord();
+		
 		fLogin = new JFrame("호야 지역아동센터");
 		fLogin.setSize(400, 300); // 프레임 사이즈 설정
 		fLogin.setLocationRelativeTo(null);
@@ -164,7 +167,6 @@ public class Login_Frame extends WindowAdapter implements ActionListener {
 			System.out.println(getID());
 			System.out.println(getPW());
 			if (TorC.equals("teacher")) {
-				cDAO = new CenterDAO();
 
 				String sId = getID();
 				ArrayList<TeacherVo> Tlist = cDAO.teacherList(sId);
@@ -190,7 +192,6 @@ public class Login_Frame extends WindowAdapter implements ActionListener {
 			}
 
 			if (TorC.equals("child")) {
-				cDAO = new CenterDAO();
 
 				String sId = getID();
 				ArrayList<ChildVo> Clist = cDAO.childList(sId);
