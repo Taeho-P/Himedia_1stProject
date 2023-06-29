@@ -30,6 +30,7 @@ public class CenterDAO {
 	private String sAddHo;
 	private String sSgst;
 	private String sGradu;
+	private String sChildUpdate;
 
 	public CenterDAO() {
 		connDB();
@@ -84,14 +85,14 @@ public class CenterDAO {
 		cal = Calendar.getInstance();
 		String sNow2 = now.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 		ArrayList<ChildVo> list = new ArrayList<ChildVo>();
-		
+
 		try {
 			String query = "SELECT * FROM attend_table WHERE code_date = '";
 			query += 1 + sNow2 + "'";
 			rs = stmt.executeQuery(query);
 			rs.last();
 			System.out.println("rs.getRow() : " + rs.getRow());
-			
+
 			if (rs.getRow() == 0) {
 				String sAttend_day = null;
 				int iDay = cal.get(Calendar.DAY_OF_WEEK);
@@ -156,24 +157,24 @@ public class CenterDAO {
 							String sSchool = rs.getString("school");//
 							String sHo = rs.getString("ho");//
 
-							ChildVo data = new ChildVo(sCcode, bImage, sId, sPw, sCname, sCbirthday, sGender, sCcall, sFather,
-									sMother, sSchool, sHo);
+							ChildVo data = new ChildVo(sCcode, bImage, sId, sPw, sCname, sCbirthday, sGender, sCcall,
+									sFather, sMother, sSchool, sHo);
 							list.add(data);
 							System.out.println("리스트 추가");
 						}
 					}
-					//INSERT INTO ATTEND_TABLE (c_code, c_name, attend_day, code_date) VALUES (2, '이하얀', '수', '220230628')
+					// INSERT INTO ATTEND_TABLE (c_code, c_name, attend_day, code_date) VALUES (2,
+					// '이하얀', '수', '220230628')
 					for (int i = 0; i < list.size(); i++) {
 						query = "INSERT INTO ATTEND_TABLE (c_code, c_name, attend_day, code_date) VALUES (?, ?, ?, ?)";
 						PreparedStatement pstmt = con.prepareStatement(query);
 						ChildVo cvInfo = list.get(i);
-						
+
 						int iC_code = Integer.parseInt(cvInfo.getC_code());
 						String sC_name = cvInfo.getC_name();
 						String sAttendDay = sAttend_day;
 						String sCode_date = iC_code + sNow2;
-						
-						
+
 						pstmt.setInt(1, iC_code);
 						pstmt.setString(2, sC_name);
 						pstmt.setString(3, sAttendDay);
@@ -190,12 +191,7 @@ public class CenterDAO {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		
-		
-		
-		
-		
+
 	}
 
 	public ArrayList<ChildVo> childList() {
@@ -389,10 +385,10 @@ public class CenterDAO {
 		ArrayList<ChildAttendVo> list = new ArrayList<ChildAttendVo>();
 
 		try {
-			
+
 			String query = "SELECT * FROM attend_table WHERE c_code = ";
-			
-			query += c_code + "AND code_date LIKE '" + code_date + "%'";
+
+			query += c_code + " AND code_date LIKE '" + code_date + "%'  ORDER BY code_date";
 			System.out.println("SQL : " + query);
 
 			rs = stmt.executeQuery(query);
@@ -405,7 +401,7 @@ public class CenterDAO {
 			} else {
 				System.out.println(rs.getRow() + "rows selected...");
 				rs.beforeFirst();
-				//"날짜", "출결", "등원", "하원", "사유"
+				// "날짜", "출결", "등원", "하원", "사유"
 				while (rs.next()) {
 					String sCcode = rs.getString("c_code");//
 					String sCname = rs.getString("c_name");
@@ -415,10 +411,11 @@ public class CenterDAO {
 					String sAttend = rs.getString("attend");
 					String sReason = rs.getString("reason");
 					String sCode_date = rs.getString("code_date");
-					
-					//c_code, c_name, center_in, center_out, attend_day, attend, reason
-					
-					ChildAttendVo data = new ChildAttendVo(sCcode, sCname, sCenter_in, sCenter_out, sAttend_day, sAttend, sReason, sCode_date);
+
+					// c_code, c_name, center_in, center_out, attend_day, attend, reason
+
+					ChildAttendVo data = new ChildAttendVo(sCcode, sCname, sCenter_in, sCenter_out, sAttend_day,
+							sAttend, sReason, sCode_date);
 					list.add(data);
 					System.out.println("리스트 추가");
 				}
@@ -430,6 +427,69 @@ public class CenterDAO {
 
 		return list;
 	}
+	
+	public void todayCheckDone(String code_date, String attend) {
+		try {
+			//UPDATE ATTEND_TABLE SET attend = '결석' WHERE code_date = '1320230629'
+			String query = "UPDATE ATTEND_TABLE SET attend = '";
+			query += attend + "' WHERE code_date = '" + code_date + "'";
+			System.out.println("SQL : " + query);
+			
+			PreparedStatement pstmt = con.prepareStatement(query);
+			pstmt.executeUpdate(query);
+			
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	
+	
+	public ArrayList<ChildAttendVo> todayCheck(String code_date) {
+		ArrayList<ChildAttendVo> list = new ArrayList<ChildAttendVo>();
+
+		try {
+			//SELECT * FROM ATTEND_TABLE WHERE code_date LIKE '%20230629%' ORDER BY c_code
+			String query = "SELECT * FROM ATTEND_TABLE WHERE code_date LIKE '%";
+
+			query += code_date + "%' ORDER BY c_code";
+			System.out.println("SQL : " + query);
+
+			rs = stmt.executeQuery(query);
+			rs.last();
+			System.out.println("rs.getRow() : " + rs.getRow());
+
+			if (rs.getRow() == 0) {
+				System.out.println("0 row selected...");
+				System.out.println("조회된 기록이 없습니다.");
+			} else {
+				System.out.println(rs.getRow() + "rows selected...");
+				rs.beforeFirst();
+				while (rs.next()) {
+					String sCcode = rs.getString("c_code");//
+					String sCname = rs.getString("c_name");
+					String sCenter_in = rs.getString("center_in");
+					String sCenter_out = rs.getString("center_out");
+					String sAttend_day = rs.getString("attend_day");
+					String sAttend = rs.getString("attend");
+					String sReason = rs.getString("reason");
+					String sCode_date = rs.getString("code_date");
+
+					ChildAttendVo data = new ChildAttendVo(sCcode, sCname, sCenter_in, sCenter_out, sAttend_day,
+							sAttend, sReason, sCode_date);
+					list.add(data);
+					System.out.println("리스트 추가");
+				}
+
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return list;
+	}
+	
 
 	public String findChildList(String name, String birth, String gender, String ForM, String parent) {
 
@@ -568,6 +628,8 @@ public class CenterDAO {
 		return sCheck;
 
 	}
+	
+	
 
 	public String[] inOrOutCheck(String code_date) {
 
@@ -581,22 +643,18 @@ public class CenterDAO {
 			rs = stmt.executeQuery(query);
 			rs.last();
 
-			if (rs.getRow() == 0) {
-				System.out.println("0 row selected...");
-				System.out.println("일치하는 기록이 없습니다.");
+			if (rs.getString("center_in") == null) {
+				System.out.println("출석 기록이 없습니다.");
 				sCheck[0] = "in";
 			} else if (rs.getString("center_out") == null) {
-				System.out.println(rs.getRow() + "rows selected...");
 				sCheck[0] = "out";
 				sCheck[1] = rs.getString("center_in");
 				sCheck[2] = rs.getString("center_out");
 			} else if (rs.getString("add_ho") == null) {
-				System.out.println(rs.getRow() + "rows selected...");
 				sCheck[0] = "home";
 				sCheck[1] = rs.getString("center_in");
 				sCheck[2] = rs.getString("center_out");
 			} else {
-				System.out.println("출석 호 받음");
 				sCheck[0] = "HoAdded";
 				sCheck[1] = rs.getString("center_in");
 				sCheck[2] = rs.getString("center_out");
@@ -753,12 +811,38 @@ public class CenterDAO {
 
 	}
 
+	public String childUpdate(String c_code, String c_name, String c_birthday, String c_call, String father,
+			String mother, String school, String ho, String image) {
+
+		try {
+			
+			String query = "UPDATE CHILD_INFO SET ";
+			query += "c_name = '" + c_name + "', c_birthday = TO_DATE('" + c_birthday + "', 'yyyy-mm-dd'), c_call = '"
+					+ c_call + "', father = '" + father + "', mother = '" + mother + "', school = '" + school
+					+ "', ho = " + ho + ", image = '" + image + "' WHERE c_code = " + c_code;
+
+			System.out.println("쿼리 : " + query);
+
+			PreparedStatement pstmt = con.prepareStatement(query);
+			pstmt.executeUpdate(query);
+
+			sChildUpdate = "updateSuccess";
+			return sChildUpdate;
+		} catch (Exception e) {
+			e.printStackTrace();
+			sChildUpdate = "updateFail";
+			return sChildUpdate;
+		}
+
+	}
+
 	public String center_IN(String c_code, String c_name, String center_in, String attend_day, String code_Date) {
 
 		try {
 
 			System.out.println("쿼리에 들어갈 날짜 : " + center_in);
-			//UPDATE ATTEND_TABLE SET center_in = to_date ('2023-06-28 10:42', 'yyyy-mm-dd hh24:mi') WHERE code_date = '120230628'
+			// UPDATE ATTEND_TABLE SET center_in = to_date ('2023-06-28 10:42', 'yyyy-mm-dd
+			// hh24:mi') WHERE code_date = '120230628'
 			String query = "UPDATE ATTEND_TABLE SET center_in = to_date ";
 			query += "('" + center_in + "', 'yyyy-mm-dd hh24:mi') WHERE code_date = '" + code_Date + "'";
 
@@ -796,11 +880,11 @@ public class CenterDAO {
 		}
 
 	}
-	
+
 	public String modifyAttend(String code_date, String attend, String reason) {
 
 		try {
-			//공휴일', reason = '어린이날' WHERE code_date = '220230505'
+			// 공휴일', reason = '어린이날' WHERE code_date = '220230505'
 			String query = "UPDATE ATTEND_TABLE SET attend = '";
 			query += attend + "', reason = '" + reason + "' WHERE code_date = '" + code_date + "'";
 

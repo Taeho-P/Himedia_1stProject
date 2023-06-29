@@ -97,20 +97,10 @@ public class OpenWallet extends WindowAdapter implements ActionListener {
 			} else {
 				String sIn = IorO[1];
 				System.out.println(sIn);
-				String sInTime = sIn.substring(11, 13);
-				System.out.println(sInTime);
-				int iInTime = Integer.parseInt(sInTime);
-				System.out.println(iInTime);
-				if (iInTime >= 16) {
-					String AddHo = cDAO.addHo(cInfo.getC_code(), 50, sCode_Date);
-					if (AddHo.equals("AddScs")) {
-						showCaution(now.format(DateTimeFormatter.ofPattern("yy/MM/dd")) + " 50호가 충전됐습니다.", "addHo");
-					}
-				} else {
-					String AddHo = cDAO.addHo(cInfo.getC_code(), 100, sCode_Date);
-					if (AddHo.equals("AddScs")) {
-						showCaution(now.format(DateTimeFormatter.ofPattern("yy/MM/dd")) + " 100호가 충전됐습니다.", "addHo");
-					}
+
+				String AddHo = cDAO.addHo(cInfo.getC_code(), 100, sCode_Date);
+				if (AddHo.equals("AddScs")) {
+					showCaution(now.format(DateTimeFormatter.ofPattern("yy/MM/dd")) + " 100호가 충전됐습니다.", "addHo");
 				}
 			}
 		}

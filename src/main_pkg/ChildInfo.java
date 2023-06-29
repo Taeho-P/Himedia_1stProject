@@ -4,12 +4,14 @@ import java.awt.Button;
 import java.awt.Choice;
 import java.awt.Dialog;
 import java.awt.FileDialog;
+import java.awt.Font;
 import java.awt.Image;
 import java.awt.Label;
 import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -35,7 +37,10 @@ public class ChildInfo extends WindowAdapter implements ActionListener {
 	private Dialog dCaution;
 	private FileDialog fdImage;
 
+	private Font fDfont;
+
 	public ChildInfo(TeacherVo tInfo, ChildVo cInfo) {
+		cDAO = new CenterDAO();
 		this.tInfo = tInfo;
 		this.cInfo = cInfo;
 		fChildInfo = new JFrame("아동정보관리");
@@ -46,8 +51,7 @@ public class ChildInfo extends WindowAdapter implements ActionListener {
 		Image icon = new ImageIcon("./src/icon.png").getImage();
 		fChildInfo.setIconImage(icon);
 
-		iChildImage = new ImageIcon(cInfo.getImage()).getImage().getScaledInstance(120, 160,
-				Image.SCALE_SMOOTH);
+		iChildImage = new ImageIcon(cInfo.getImage()).getImage().getScaledInstance(120, 160, Image.SCALE_SMOOTH);
 
 		lImage = new JLabel();
 		lImage.setBounds(135, 30, 120, 160);
@@ -118,33 +122,37 @@ public class ChildInfo extends WindowAdapter implements ActionListener {
 		}
 		cBirthY.setBounds(128, 291, 53, 30);
 		cBirthY.select(cInfo.getC_birthday().substring(0, 4));
-		
-		
+
 		cBirthM = new Choice();
 		for (int i = 1; i <= 12; i++) {
 			cBirthM.add(String.format("%02d", i));
 		}
 		cBirthM.setBounds(189, 291, 40, 30);
 		cBirthM.select(cInfo.getC_birthday().substring(5, 7));
-		
+
 		cBirthD = new Choice();
 		for (int i = 1; i <= 31; i++) {
 			cBirthD.add(String.format("%02d", i));
 		}
 		cBirthD.setBounds(237, 291, 40, 30);
 		cBirthD.select(cInfo.getC_birthday().substring(8, 10));
-		
+
 		btOk = new Button("확인");
 		btOk.setBounds(93, 480, 80, 30);
+		btOk.addActionListener(this);
+		btOk.setActionCommand("back");
 
 		btModify = new Button("수정하기");
 		btModify.setBounds(210, 480, 80, 30);
+		btModify.addActionListener(this);
+		btModify.setActionCommand("modify");
 
 		btImage = new Button("불러오기");
 		btImage.setBounds(289, 200, 60, 25);
 		btImage.addActionListener(this);
 		btImage.setActionCommand("image");
 
+		fChildInfo.addWindowListener(this);
 		fChildInfo.add(lImage);
 		fChildInfo.add(lImageLoc);
 		fChildInfo.add(lName);
@@ -176,19 +184,67 @@ public class ChildInfo extends WindowAdapter implements ActionListener {
 		fChildInfo.setVisible(true);
 	}
 
+	public void windowClosing(WindowEvent e) {
+		if (e.getComponent() == dCaution) {
+			dCaution.dispose();
+		}
+
+		if (e.getComponent() == fChildInfo) {
+			new ChildList(tInfo);
+			fChildInfo.dispose();
+		}
+	}
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		if (e.getActionCommand().equals("modified")) {
+			dCaution.dispose();
+		}
+
+		if (e.getActionCommand().equals("modifyY")) {
+			dCaution.dispose();
+
+			String sC_code = cInfo.getC_code();
+			String sC_name = tfName.getText();
+			String sC_birthday = cBirthY.getSelectedItem() + "-" + cBirthM.getSelectedItem() + "-"
+					+ cBirthD.getSelectedItem();
+			String sC_call = tfCall.getText();
+			String sFather = tfFather.getText();
+			String sMother = tfMother.getText();
+			String sSchool = tfSchool.getText();
+			String sHo = tfHo.getText();
+			String sImage = tfImageLoc.getText();
+
+			String sModify = cDAO.childUpdate(sC_code, sC_name, sC_birthday, sC_call, sFather, sMother, sSchool, sHo,
+					sImage);
+
+			if (sModify.equals("updateSuccess")) {
+				showCaution("정보 수정이 완료됐습니다.", "modified");
+			} else {
+				showCaution("정보 수정에 실패했습니다.", "modified");
+			}
+		}
+
+		if (e.getActionCommand().equals("back")) {
+			new ChildList(tInfo);
+			fChildInfo.dispose();
+		}
+
+		if (e.getActionCommand().equals("modify")) {
+			showCaution("정보 수정을 진행합니다.", "modifyY");
+		}
+
 		if (e.getActionCommand().equals("image")) {
 			fdImage = new FileDialog(fChildInfo, "사진 찾기", FileDialog.LOAD);
-			
+
 			fdImage.setDirectory("C:/");
 			fdImage.setVisible(true);
-			
+
 			tfImageLoc.setText(fdImage.getDirectory() + fdImage.getFile());
-			
+
 			lImage.setVisible(false);
-			iChildImage = new ImageIcon(fdImage.getDirectory() + fdImage.getFile()).getImage().getScaledInstance(120, 160,
-					Image.SCALE_SMOOTH);
+			iChildImage = new ImageIcon(fdImage.getDirectory() + fdImage.getFile()).getImage().getScaledInstance(120,
+					160, Image.SCALE_SMOOTH);
 
 			lImage = new JLabel();
 			lImage.setBounds(135, 30, 120, 160);
@@ -197,6 +253,34 @@ public class ChildInfo extends WindowAdapter implements ActionListener {
 			lImage.setVisible(true);
 			fChildInfo.add(lImage);
 		}
-		
+
+	}
+
+	public void showCaution(String msg1, String msg3) {
+		dCaution = new Dialog(fChildInfo, "호야 지역아동센터", true);
+		dCaution.setSize(300, 190);
+		dCaution.setLocationRelativeTo(null);
+		dCaution.setLayout(null);
+		dCaution.addWindowListener(this);
+		dCaution.setResizable(false);
+		Image icon = new ImageIcon("./src/icon.png").getImage();
+		dCaution.setIconImage(icon);
+
+		fDfont = new Font("SansSerif", Font.PLAIN, 12);
+
+		JLabel lMsg1 = new JLabel(msg1);
+		lMsg1.setSize(300, 25);
+		lMsg1.setFont(fDfont);
+		lMsg1.setLocation(0, 70);
+		lMsg1.setHorizontalAlignment(JLabel.CENTER);
+
+		Button bCheck = new Button("확인");
+		bCheck.addActionListener(this);
+		bCheck.setBounds(124, 110, 50, 30);
+		bCheck.setActionCommand(msg3);
+
+		dCaution.add(lMsg1);
+		dCaution.add(bCheck);
+		dCaution.setVisible(true);
 	}
 }
