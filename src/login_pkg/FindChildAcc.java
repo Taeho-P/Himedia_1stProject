@@ -132,6 +132,7 @@ public class FindChildAcc extends WindowAdapter implements ActionListener {
 			return;
 		}
 		if (e.getActionCommand().equals("goLogin")) {
+			new Login_Frame();
 			fFindAcc.dispose();
 			dCaution.dispose();
 			return;

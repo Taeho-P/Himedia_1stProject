@@ -227,11 +227,15 @@ public class CenterDAO {
 					String sMother = rs.getString("mother");//
 					String sSchool = rs.getString("school");//
 					String sHo = rs.getString("ho");//
+					String sGradu = rs.getString("gradu");
 
-					ChildVo data = new ChildVo(sCcode, bImage, sId, sPw, sCname, sCbirthday, sGender, sCcall, sFather,
-							sMother, sSchool, sHo);
-					list.add(data);
-					System.out.println("리스트 추가");
+					if(sGradu == null) {
+						ChildVo data = new ChildVo(sCcode, bImage, sId, sPw, sCname, sCbirthday, sGender, sCcall, sFather,
+								sMother, sSchool, sHo);
+						list.add(data);
+						System.out.println("리스트 추가");
+					}
+					
 				}
 
 			}
@@ -241,6 +245,60 @@ public class CenterDAO {
 
 		return list;
 	}
+	
+	public ArrayList<ChildVo> childListGradu() {
+		ArrayList<ChildVo> list = new ArrayList<ChildVo>();
+
+		try {
+
+			String query = "SELECT * FROM CHILD_INFO ORDER BY c_code";
+
+			System.out.println("SQL : " + query);
+
+			rs = stmt.executeQuery(query);
+			rs.last();
+			System.out.println("rs.getRow() : " + rs.getRow());
+
+			if (rs.getRow() == 0) {
+				System.out.println("0 row selected...");
+				System.out.println("조회된 아동이 없습니다.");
+			} else {
+				System.out.println(rs.getRow() + "rows selected...");
+				rs.beforeFirst();
+
+				while (rs.next()) {
+					String sCcode = rs.getString("c_code");//
+					String bImage = rs.getString("image");//
+					String sId = rs.getString("id");//
+					String sPw = rs.getString("password");//
+					String sCname = rs.getString("c_name");//
+					String sCbirthday = rs.getString("c_birthday").substring(0, 10);//
+					String sGender = rs.getString("gender");//
+					String sCcall = rs.getString("c_call");//
+					String sFather = rs.getString("father");//
+					String sMother = rs.getString("mother");//
+					String sSchool = rs.getString("school");//
+					String sHo = rs.getString("ho");//
+					String sGradu = rs.getString("gradu");
+					
+					if (sGradu == null) {
+						ChildVo data = new ChildVo(sCcode, bImage, sId, sPw, sCname, sCbirthday, sGender, sCcall, sFather,
+								sMother, sSchool, sHo, sGradu);
+						list.add(data);
+						System.out.println("리스트 추가");
+					}
+
+					
+				}
+
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return list;
+	}
+
 
 	public ArrayList<ChildVo> childList(String id) {
 		ArrayList<ChildVo> list = new ArrayList<ChildVo>();
@@ -277,10 +335,11 @@ public class CenterDAO {
 					String sMother = rs.getString("mother");//
 					String sSchool = rs.getString("school");//
 					String sHo = rs.getString("ho");//
-
+					
 					ChildVo data = new ChildVo(sCcode, bImage, sId, sPw, sCname, sCbirthday, sGender, sCcall, sFather,
-							sMother, sSchool, sHo);
+								sMother, sSchool, sHo);
 					list.add(data);
+					System.out.println("리스트 추가");
 				}
 
 			}
@@ -325,11 +384,14 @@ public class CenterDAO {
 					String sMother = rs.getString("mother");//
 					String sSchool = rs.getString("school");//
 					String sHo = rs.getString("ho");//
+					String sGradu = rs.getString("gradu");
 
-					ChildVo data = new ChildVo(sCcode, bImage, sId, sPw, sCname, sCbirthday, sGender, sCcall, sFather,
-							sMother, sSchool, sHo);
-					list.add(data);
-					System.out.println("리스트 추가");
+					if(sGradu == null) {
+						ChildVo data = new ChildVo(sCcode, bImage, sId, sPw, sCname, sCbirthday, sGender, sCcall, sFather,
+								sMother, sSchool, sHo);
+						list.add(data);
+						System.out.println("리스트 추가");
+					}
 				}
 
 			}
@@ -793,8 +855,8 @@ public class CenterDAO {
 
 	public String childGradu(String c_code) {
 		try {
-
-			String query = "DELETE FROM CHILD_INFO WHERE c_code = ";
+			//
+			String query = "UPDATE CHILD_INFO SET gradu = 'Y' WHERE c_code = ";
 			query += c_code;
 			System.out.println("쿼리 : " + query);
 			PreparedStatement pstmt = con.prepareStatement(query);

@@ -68,7 +68,7 @@ public class GraduateChild extends WindowAdapter implements ActionListener {
 
 		cDAO = new CenterDAO();
 
-		ArrayList<ChildVo> cList = cDAO.childList();
+		ArrayList<ChildVo> cList = cDAO.childListGradu();
 
 		iCnt = cList.size();
 

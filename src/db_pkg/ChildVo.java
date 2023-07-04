@@ -15,6 +15,7 @@ public class ChildVo {
 	private String mother;
 	private String school;
 	private String ho;
+	private String gradu;
 	
 	
 	
@@ -36,6 +37,23 @@ public class ChildVo {
 		this.school = school;
 		this.ho = ho;
 	}
+	
+	public ChildVo(String c_code, String image, String id, String password, String c_name, String c_birthday, String gender, String c_call, String father, String mother, String school, String ho, String gradu) {
+		this.c_code = c_code;//
+		this.image = image;
+		this.id = id;//
+		this.password = password;//
+		this.c_name = c_name;//
+		this.c_birthday = c_birthday;//
+		this.gender = gender;//
+		this.c_call = c_call;//
+		this.father = father;//
+		this.mother = mother;//
+		this.school = school;
+		this.ho = ho;
+		this.gradu = gradu;
+	}
+	
 	
 	public String getC_code() {
 		return c_code;
@@ -83,6 +101,10 @@ public class ChildVo {
 	
 	public String getHo() {
 		return ho;
+	}
+	
+	public String getGradu() {
+		return gradu;
 	}
 }
 

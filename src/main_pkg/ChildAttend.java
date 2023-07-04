@@ -123,8 +123,8 @@ public class ChildAttend extends WindowAdapter implements ActionListener {
 			ChildAttendVo cAInfo = cAList.get(i);
 			String sCodeDate = cAInfo.getCode_date();
 
-			String sDate = sCodeDate.substring(1, 5) + "-" + sCodeDate.substring(5, 7) + "-"
-					+ sCodeDate.substring(7, 9);
+			String sDate = sCodeDate.substring(sCodeDate.length() - 8, sCodeDate.length() - 4) + "-" + sCodeDate.substring(sCodeDate.length() - 4, sCodeDate.length() - 2) + "-"
+					+ sCodeDate.substring(sCodeDate.length() - 2, sCodeDate.length());
 			String sAttend = cAInfo.getAttend();
 			String sCenter_in = cAInfo.getCenter_in();
 			String sCenter_out = cAInfo.getCenter_out();
@@ -164,8 +164,8 @@ public class ChildAttend extends WindowAdapter implements ActionListener {
 			ChildAttendVo cAInfo = cAList.get(i);
 			String sCodeDate = cAInfo.getCode_date();
 
-			String sDate = sCodeDate.substring(1, 5) + "-" + sCodeDate.substring(5, 7) + "-"
-					+ sCodeDate.substring(7, 9);
+			String sDate = sCodeDate.substring(sCodeDate.length() - 8, sCodeDate.length() - 4) + "-" + sCodeDate.substring(sCodeDate.length() - 4, sCodeDate.length() - 2) + "-"
+					+ sCodeDate.substring(sCodeDate.length() - 2, sCodeDate.length());
 			String sAttend = cAInfo.getAttend();
 			String sCenter_in = cAInfo.getCenter_in();
 			String sCenter_out = cAInfo.getCenter_out();
