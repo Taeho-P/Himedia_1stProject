@@ -62,7 +62,7 @@ public class ChildAttend extends WindowAdapter implements ActionListener {
 		sNowM = now.format(DateTimeFormatter.ofPattern("MM"));
 
 		fChildAttend = new JFrame("출결 조회");
-		fChildAttend.setSize(400, 350);
+		fChildAttend.setSize(630, 350);
 		fChildAttend.setLocationRelativeTo(null);
 		fChildAttend.setLayout(null);
 		fChildAttend.setResizable(false);
@@ -70,18 +70,18 @@ public class ChildAttend extends WindowAdapter implements ActionListener {
 		fChildAttend.setIconImage(icon);
 
 		lName = new Label(cInfo.getC_name());
-		lName.setBounds(20, 20, 100, 25);
+		lName.setBounds(40, 20, 100, 25);
 		cAttendY = new Choice();
 		for (int i = 2010; i <= 2023; i++) {
 			cAttendY.add(Integer.toString(i));
 		}
-		cAttendY.setBounds(248, 22, 55, 25);
+		cAttendY.setBounds(473, 22, 55, 25);
 
 		cAttendM = new Choice();
 		for (int i = 1; i <= 12; i++) {
 			cAttendM.add(String.format("%02d", i));
 		}
-		cAttendM.setBounds(307, 22, 45, 25);
+		cAttendM.setBounds(532, 22, 45, 25);
 
 		cAttendY.select(sNowY);
 		cAttendM.select(sNowM);
@@ -89,12 +89,12 @@ public class ChildAttend extends WindowAdapter implements ActionListener {
 		setTable(cInfo.getC_code());
 
 		btSearch = new Button("출석조회");
-		btSearch.setBounds(100, 271, 70, 30);
+		btSearch.setBounds(215, 271, 70, 30);
 		btSearch.addActionListener(this);
 		btSearch.setActionCommand("search");
 
 		btManage = new Button("수정하기");
-		btManage.setBounds(210, 271, 70, 30);
+		btManage.setBounds(325, 271, 70, 30);
 		btManage.addActionListener(this);
 		btManage.setActionCommand("update");
 
@@ -144,7 +144,7 @@ public class ChildAttend extends WindowAdapter implements ActionListener {
 
 		resizeColumnWidth(tAttend1);
 
-		scrollPane1.setBounds(15, 55, 360, 210);
+		scrollPane1.setBounds(15, 55, 590, 210);
 
 	}
 
@@ -185,7 +185,7 @@ public class ChildAttend extends WindowAdapter implements ActionListener {
 
 		resizeColumnWidth(tAttend2);
 
-		scrollPane2.setBounds(15, 55, 360, 210);
+		scrollPane2.setBounds(15, 55, 590, 210);
 
 	}
 

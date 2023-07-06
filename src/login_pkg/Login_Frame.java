@@ -53,7 +53,7 @@ public class Login_Frame extends WindowAdapter implements ActionListener {
 		Image icon = new ImageIcon("./src/icon.png").getImage();
 		fLogin.setIconImage(icon);
 
-		Image image = new ImageIcon("./src/logo.png").getImage(); // 띄울 이미지 불러오기
+		Image image = new ImageIcon("./doc/project_images/logo.png").getImage(); // 띄울 이미지 불러오기
 //		File f = new File("./src/logo.png");
 //		System.out.println(f.exists()?"oo":"xx");
 		ImagePanel ip = new ImagePanel(image); // 프레임에 이미지를 넣기위한 패널
